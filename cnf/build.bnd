@@ -8,6 +8,6 @@
         query				=	"q=g:com.liferay&core=gav&rows=10000"
 
 -plugin.9.Orbit.Neon: \
-    aQute.bnd.repository.osgi.OSGiRepository; \
+    aQute.bnd.repository.p2.provider.P2Repository; \
         name				=	"Orbit (Neon)"; \
-        locations			=	"http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/index.xml.gz"
+        url			=	"http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/"

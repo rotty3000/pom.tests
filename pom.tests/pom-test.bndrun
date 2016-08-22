@@ -2,5 +2,34 @@
 -runsystempackages:\
 	antlr,\
 	antlr.collections,\
-	antlr.collections.impl
--runpath: antlr;version='[2.7,3.0)'
+	antlr.collections.impl,\
+	net.sf.cglib.beans,\
+	net.sf.cglib.core,\
+	net.sf.cglib.proxy,\
+	net.sf.cglib.reflect,\
+	net.sf.cglib.transform,\
+	net.sf.cglib.transform.impl,\
+	org.hibernate.annotations.common,\
+	org.hibernate.annotations.common.annotationfactory,\
+	org.hibernate.annotations.common.reflection,\
+	org.hibernate.annotations.common.reflection.java
+-runpath:\
+	antlr;version='2.7.7',\
+	cglib-nodep;version='2.2.0',\
+	hibernate-commons-annotations;version='3.2.0.Final'
+-runbundles: \
+	com.liferay.portal.cache.ehcache.provider;version='[2.0.1,2.0.2)',\
+	javassist;version='[3.18.2,3.18.3)',\
+	javax.persistence;version='[1.0.0,1.0.1)',\
+	javax.security.jacc;version='[1.4.0,1.4.1)',\
+	javax.servlet;version='[3.1.0,3.1.1)',\
+	javax.validation;version='[1.0.0,1.0.1)',\
+	log4j;version='[1.2.17,1.2.18)',\
+	org.apache.ant;version='[1.9.6,1.9.7)',\
+	org.apache.commons.collections;version='[3.2.2,3.2.3)',\
+	org.dom4j;version='[1.6.1,1.6.2)',\
+	org.hibernate.core;version='[3.6.10,3.6.11)',\
+	org.objectweb.asm;version='[5.0.3,5.0.4)',\
+	slf4j.api;version='[1.7.13,1.7.14)',\
+	slf4j.api;version='[1.7.21,1.7.22)',\
+	slf4j.log4j12;version='[1.7.2,1.7.3)'
