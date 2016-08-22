@@ -1,0 +1,6 @@
+-runrequires: osgi.identity;filter:='(osgi.identity=com.liferay.portal.cache.ehcache.provider)'
+-runsystempackages:\
+	antlr,\
+	antlr.collections,\
+	antlr.collections.impl
+-runpath: antlr;version='[2.7,3.0)'

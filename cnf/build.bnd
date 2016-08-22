@@ -1,0 +1,13 @@
+#
+# This file is left open for you to define your macros
+#
+
+-plugin.8.com.liferay: \
+    aQute.bnd.repository.maven.pom.provider.BndPomRepository; \
+        name				=	"Liferay In MavenCentral"; \
+        query				=	"q=g:com.liferay&core=gav&rows=10000"
+
+-plugin.9.Orbit.Neon: \
+    aQute.bnd.repository.osgi.OSGiRepository; \
+        name				=	"Orbit (Neon)"; \
+        locations			=	"http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/index.xml.gz"
