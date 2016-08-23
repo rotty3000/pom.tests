@@ -6,7 +6,7 @@
     aQute.bnd.repository.maven.pom.provider.BndPomRepository; \
         name				=	"Liferay In MavenCentral"; \
         query				=	"q=g:com.liferay&rows=10000";\
-        releaseUrls			=	"http://repository.liferay.com/nexus/content/groups/public"
+        releaseUrls			=	"https://cdn.lfrs.sl/repository.liferay.com/nexus/content/groups/public"
 
 -plugin.9.Orbit.Neon: \
     aQute.bnd.repository.p2.provider.P2Repository; \
