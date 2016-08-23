@@ -6,6 +6,11 @@
 
 -runfw: org.eclipse.osgi
 
+-plugin.enroute.distro = \
+	aQute.bnd.deployer.repository.FixedIndexedRepo; \
+	        name		=       Distro; \
+	        locations	=       https://raw.githubusercontent.com/osgi/osgi.enroute/v1.0.0/cnf/distro/index.xml
+
 -runblacklist.enroute:	\
 	osgi.identity;filter:='(osgi.identity=osgi.enroute.base.api)', \
 	osgi.identity;filter:='(osgi.identity=osgi.cmpn)', \
