@@ -8,6 +8,11 @@
         query				=	"q=g:com.liferay&rows=10000";\
         releaseUrls			=	"https://cdn.lfrs.sl/repository.liferay.com/nexus/content/groups/public"
 
+-plugin.z.NeonR-4.6-201606061100: \
+	aQute.bnd.repository.p2.provider.P2Repository; \
+		name				=	"Eclipse Neon (4.6)"; \
+		url					=	"http://download.eclipse.org/eclipse/updates/4.6/R-4.6-201606061100/"
+
 -plugin.9.Orbit.Neon: \
     aQute.bnd.repository.p2.provider.P2Repository; \
         name				=	"Orbit (Neon)"; \
