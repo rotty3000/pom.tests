@@ -5,8 +5,12 @@
  * and bnd_* values from gradle.properties.
  */
 
+import aQute.bnd.build.Run
 import aQute.bnd.build.Workspace
 import aQute.bnd.osgi.Constants
+import biz.aQute.resolve.ProjectResolver
+import org.osgi.resource.Resource
+import org.osgi.resource.Wire
 
 /* Add bnd gradle plugin as a script dependency */
 buildscript {
@@ -30,6 +34,33 @@ subprojects {
   def bndProject = bndWorkspace.getProject(name)
   if (bndProject != null) {
     plugins.apply 'biz.aQute.bnd'
+
+    tasks.addRule('Pattern: <name>.resolve: Resolve the bndrun file <name>.bndrun.') { taskName ->
+		if (taskName.endsWith('.resolve')) {
+			task(taskName) {
+				ext.run = taskName - '.resolve'
+				description "Resolve the bndrun file ${run}.bndrun."
+				ext.runFile = new File(projectDir, "${run}.bndrun")
+				if (!runFile.exists())
+					throw new GradleException("${runFile} not found!")
+				dependsOn compileJava
+				Run run = new Run(bndWorkspace, buildDir, runFile)
+				doFirst {
+					println "============================================"
+					println "Resolving ${taskName}: ${runFile}"
+					println "-runpath:\n\t ${run.getProperty('-runpath*')}"
+					println "-runbundles:\n\t ${run.getProperty('-runbundle*')}"
+					println "============================================"
+				}
+				doLast {
+					ProjectResolver pr = new ProjectResolver(run)
+					pr.setTrace(true)
+					Map<Resource,List<Wire>> resolve = pr.resolve()
+					print "${resolve}\n"
+				}
+			}
+		}
+	}
   }
 }
 
