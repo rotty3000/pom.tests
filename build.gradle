@@ -5,10 +5,12 @@
  * and bnd_* values from gradle.properties.
  */
 
+import aQute.bnd.build.ProjectLauncher
 import aQute.bnd.build.Run
 import aQute.bnd.build.Workspace
 import aQute.bnd.osgi.Constants
 import biz.aQute.resolve.ProjectResolver
+import org.osgi.resource.Capability
 import org.osgi.resource.Resource
 import org.osgi.resource.Wire
 
@@ -35,33 +37,98 @@ subprojects {
   if (bndProject != null) {
     plugins.apply 'biz.aQute.bnd'
 
-    tasks.addRule('Pattern: <name>.resolve: Resolve the bndrun file <name>.bndrun.') { taskName ->
+    tasks.addRule('Pattern: <name>.resolve: Resolve the bnd(run) file <name>.bnd(run).') { taskName ->
 		if (taskName.endsWith('.resolve')) {
 			task(taskName) {
-				ext.run = taskName - '.resolve'
-				description "Resolve the bndrun file ${run}.bndrun."
-				ext.runFile = new File(projectDir, "${run}.bndrun")
-				if (!runFile.exists())
-					throw new GradleException("${runFile} not found!")
-				dependsOn compileJava
-				Run run = new Run(bndWorkspace, buildDir, runFile)
+				ext.runTask = taskName - '.resolve'
+				description "Resolve the bndrun file ${runTask}.bnd(run)."
+				dependsOn assemble
+				def runFile = getRunFile(projectDir, runTask)
 				doFirst {
-					println "============================================"
-					println "Resolving ${taskName}: ${runFile}"
-					println "-runpath:\n\t ${run.getProperty('-runpath*')}"
-					println "-runbundles:\n\t ${run.getProperty('-runbundle*')}"
-					println "============================================"
+					println "Resolving ${runFile}"
 				}
 				doLast {
+					Run run = new Run(bndWorkspace, buildDir, runFile)
 					ProjectResolver pr = new ProjectResolver(run)
 					pr.setTrace(true)
 					Map<Resource,List<Wire>> resolve = pr.resolve()
-					print "${resolve}\n"
+					print "-runbundles: \\\n\t"
+					def prefix = ""
+					resolve.keySet().toSorted().each {k ->
+						print "${prefix}${toString(k)}"
+						prefix = ",\\\n\t"
+					}
+					println ""
+				}
+			}
+		}
+	}
+
+    tasks.addRule('Pattern: <name>.export: Export the bnd(run) file <name>.bnd(run) to an executable jar.') { taskName ->
+		if (taskName.endsWith('.export')) {
+			task(taskName) {
+				ext.exportTask = taskName - '.export'
+				description "Export the bnd(run) file <name>.bnd(run) to an executable jar."
+				dependsOn assemble
+				def runFile = getRunFile(projectDir, exportTask)
+				doFirst {
+					println "Exporting ${runFile}"
+				}
+				doLast {
+					Run run = new Run(bndWorkspace, buildDir, runFile)
+					ProjectLauncher l = run.getProjectLauncher();
+					l.setTrace(true);
+					aQute.bnd.osgi.Jar executable = l.executable();
+					if (run.check()) {
+						def dir = new File(buildDir, "executable");
+						dir.mkdirs()
+						def exportJar = new File(dir, "${exportTask}.jar")
+						executable.write(exportJar)
+						println "Wrote executable jar: ${exportJar}"
+					}
+				}
+			}
+		}
+	}
+
+    tasks.addRule('Pattern: <name>.run: Run the bnd(run) file <name>.bnd(run).') { taskName ->
+		if (taskName.endsWith('.run')) {
+			task(taskName) {
+				ext.exportTask = taskName - '.run'
+				description "Run the bnd(run) file <name>.bnd(run)."
+				dependsOn assemble
+				def runFile = getRunFile(projectDir, exportTask)
+				doFirst {
+					println "Running ${runFile}"
+				}
+				doLast {
+					Run run = new Run(bndWorkspace, buildDir, runFile)
+					ProjectLauncher l = run.getProjectLauncher();
+					l.setTrace(true);
+					l.launch();
 				}
 			}
 		}
 	}
   }
+}
+
+def getRunFile(File projectDir, String taskName) {
+	def runFile = new File(projectDir, "${taskName}.bndrun")
+	if (!runFile.exists()) {
+		runFile = new File(projectDir, "${taskName}.bnd")
+		if (!runFile.exists())
+			throw new GradleException("No ${taskName}.bnd(run) found in ${projectDir}")
+	}
+	runFile
+}
+
+def toString(Resource resource) {
+	List<Capability> identities = resource.getCapabilities('osgi.identity')
+	Capability idCap = identities.get(0)
+	Object id = idCap.getAttributes().get('osgi.identity')
+	Object version = idCap.getAttributes().get('version')
+	"${id};version='${version}'"
 }
 
 task wrapper(type: Wrapper) {

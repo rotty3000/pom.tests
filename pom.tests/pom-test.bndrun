@@ -18,6 +18,15 @@
 	com.liferay.portal.kernel.dao.orm;version='7.0.0',\
 	com.liferay.portal.kernel.io;version='7.0.0',\
 	com.liferay.portal.kernel.log;version='7.0.0',\
+	com.liferay.portal.kernel.model;version='1.0.0',\
+	com.liferay.portal.kernel.nio.intraband.proxy.annotation;version='1.0.0',\
+	com.liferay.portal.kernel.resiliency.spi;version='6.3.0',\
+	com.liferay.portal.kernel.resiliency.spi.cache;version='1.0.0',\
+	com.liferay.portal.kernel.service.persistence.impl;version='1.0.0',\
+	com.liferay.portal.kernel.util;version='7.0.0',\
+	com.liferay.portal.kernel.cache.configurator;version='1.0.0',\
+	com.liferay.portal.kernel.exception;version='7.0.0',\
+	com.liferay.portal.kernel.io.unsync;version='6.2.0',\
 	net.sf.cglib.beans,\
 	net.sf.cglib.core,\
 	net.sf.cglib.proxy,\
@@ -29,43 +38,44 @@
 	org.hibernate.annotations.common.annotationfactory,\
 	org.hibernate.annotations.common.reflection,\
 	org.hibernate.annotations.common.reflection.java
+
 -runpath:\
 	antlr:antlr;version='2.7.7',\
 	cglib:cglib-nodep;version='2.1.0',\
 	org.hibernate:hibernate-commons-annotations;version='3.2.0'
+
 -runbundles: \
-	org.apache.felix.configadmin;version='[1.8.8,1.8.9)',\
-	org.apache.felix.gogo.command;version='[0.14.0,0.14.1)',\
-	org.apache.felix.gogo.runtime;version='[0.16.2,0.16.3)',\
-	org.apache.felix.gogo.shell;version='[0.10.0,0.10.1)',\
-	com.liferay.osgi.util;version='[3.0.2,3.0.3)',\
-	com.liferay.portal.cache;version='[2.1.1,2.1.2)',\
-	com.liferay.portal.cache.ehcache;version='[2.1.1,2.1.2)',\
-	com.liferay.portal.cache.ehcache.provider;version='[2.0.1,2.0.2)',\
-	com.liferay.portal.cache.single;version='[2.0.1,2.0.2)',\
-	com.liferay.portal.jmx;version='[3.0.1,3.0.2)',\
-	com.liferay.portal.kernel;version='[2.0.0,2.0.1)',\
-	com.liferay.portal.profile;version='[1.0.2,1.0.3)',\
-	com.liferay.registry.api;version='[1.1.0,1.1.1)',\
-	javassist;version='[3.19.0,3.19.1)',\
-	javax.activation;version='[1.1.0,1.1.1)',\
-	javax.mail.glassfish;version='[1.4.1,1.4.2)',\
-	javax.persistence;version='[1.0.0,1.0.1)',\
-	javax.portlet;version='[0.0.0,0.0.1)',\
-	javax.security.jacc;version='[1.4.0,1.4.1)',\
-	javax.validation;version='[1.0.0,1.0.1)',\
-	org.apache.ant;version='[1.9.6,1.9.7)',\
-	org.apache.commons.collections;version='[3.2.2,3.2.3)',\
-	org.apache.felix.http.servlet-api;version='[1.1.2,1.1.3)',\
-	org.apache.felix.scr;version='[2.0.0,2.0.1)',\
-	org.dom4j;version='[1.6.1,1.6.2)',\
-	org.eclipse.equinox.console;version='[1.1.200,1.1.201)',\
-	org.eclipse.equinox.metatype;version='[1.4.200,1.4.201)',\
-	org.hibernate.core;version='[3.6.10,3.6.11)',\
-	org.objectweb.asm;version='[5.0.3,5.0.4)',\
-	org.osgi.service.metatype;version='[1.3.0,1.3.1)',\
-	org.slf4j.log4j;version='[1.7.2,1.7.3)',\
-	slf4j.api;version='[1.7.21,1.7.22)',\
-	slf4j.log4j12;version='[1.7.2,1.7.3)'
+	com.liferay.osgi.util;version='3.0.2',\
+	com.liferay.portal.cache;version='2.1.1',\
+	com.liferay.portal.cache.ehcache;version='2.1.1',\
+	com.liferay.portal.cache.ehcache.provider;version='2.0.1',\
+	com.liferay.portal.cache.single;version='2.0.1',\
+	com.liferay.portal.jmx;version='3.0.1',\
+	com.liferay.portal.profile;version='1.0.2',\
+	javassist;version='3.19.0.GA',\
+	javax.persistence;version='1.0.0.v200905011740',\
+	javax.security.jacc;version='1.4.0.v201205031350',\
+	javax.validation;version='1.0.0.GA_v201205091237',\
+	org.apache.ant;version='1.9.6.v201510161327',\
+	org.apache.commons.collections;version='3.2.2.v201511171945',\
+	org.apache.felix.configadmin;version='1.8.8',\
+	org.apache.felix.gogo.command;version='0.14.0',\
+	org.apache.felix.gogo.runtime;version='0.16.2',\
+	org.apache.felix.gogo.shell;version='0.10.0',\
+	org.apache.felix.gogo.shell;version='0.10.0.v201212101605',\
+	org.apache.felix.http.servlet-api;version='1.1.2',\
+	org.apache.felix.scr;version='2.0.0',\
+	org.dom4j;version='1.6.1.v201312101416',\
+	org.eclipse.equinox.console;version='1.1.200.v20150929-1405',\
+	org.eclipse.equinox.metatype;version='1.4.200.v20160324-1850',\
+	org.hibernate.core;version='3.6.10.LIFERAY-PATCHED-1',\
+	org.objectweb.asm;version='5.0.3',\
+	org.osgi.service.metatype;version='1.3.0.201505202024',\
+	org.slf4j.log4j;version='1.7.2.v20130115-1340',\
+	slf4j.api;version='1.5.8',\
+	slf4j.api;version='1.7.21',\
+	slf4j.log4j12;version='1.7.2'
+
 -runsystemcapabilities: osgi.service;objectClass:List<String>="com.liferay.portal.kernel.util.Props"
--runproperties: osgi.console=
+-runproperties: \
+	osgi.console=
