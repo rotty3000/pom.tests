@@ -37,75 +37,77 @@ subprojects {
   if (bndProject != null) {
     plugins.apply 'biz.aQute.bnd'
 
-    tasks.addRule('Pattern: <name>.resolve: Resolve the bnd(run) file <name>.bnd(run).') { taskName ->
-		if (taskName.endsWith('.resolve')) {
-			task(taskName) {
-				ext.runTask = taskName - '.resolve'
-				description "Resolve the bndrun file ${runTask}.bnd(run)."
-				dependsOn assemble
-				def runFile = getRunFile(projectDir, runTask)
-				doFirst {
-					println "Resolving ${runFile}"
-				}
-				doLast {
-					Run run = new Run(bndWorkspace, buildDir, runFile)
-					ProjectResolver pr = new ProjectResolver(run)
-					pr.setTrace(true)
-					Map<Resource,List<Wire>> resolve = pr.resolve()
-					print "-runbundles: \\\n\t"
-					def prefix = ""
-					resolve.keySet().toSorted().each {k ->
-						print "${prefix}${toString(k)}"
-						prefix = ",\\\n\t"
-					}
-					println ""
-				}
-			}
-		}
-	}
-
-    tasks.addRule('Pattern: <name>.export: Export the bnd(run) file <name>.bnd(run) to an executable jar.') { taskName ->
-		if (taskName.endsWith('.export')) {
-			task(taskName) {
-				ext.exportTask = taskName - '.export'
-				description "Export the bnd(run) file <name>.bnd(run) to an executable jar."
-				dependsOn assemble
-				def runFile = getRunFile(projectDir, exportTask)
-				doFirst {
-					println "Exporting ${runFile}"
-				}
-				doLast {
-					Run run = new Run(bndWorkspace, buildDir, runFile)
-					ProjectLauncher l = run.getProjectLauncher();
-					l.setTrace(true);
-					aQute.bnd.osgi.Jar executable = l.executable();
-					if (run.check()) {
-						def dir = new File(buildDir, "executable");
-						dir.mkdirs()
-						def exportJar = new File(dir, "${exportTask}.jar")
-						executable.write(exportJar)
-						println "Wrote executable jar: ${exportJar}"
+    tasks.addRule('Pattern: resolve.<name>: Resolve the bnd(run) file <name>.bnd(run).') { taskName ->
+		if (taskName.startsWith('resolve.')) {
+			def bndrun = taskName - 'resolve.'
+			def runFile = getRunFile(projectDir, bndrun)
+			if (runFile.isFile()) {
+				task(taskName) {
+					description "Resolve the bndrun file ${bndrun}.bnd(run)."
+					dependsOn assemble
+					group 'export'
+					doLast {
+						println "Resolving ${bndrun}"
+						Run run = new Run(bndWorkspace, buildDir, runFile)
+						ProjectResolver pr = new ProjectResolver(run)
+						pr.setTrace(true)
+						Map<Resource,List<Wire>> resolve = pr.resolve()
+						def output = ""
+						output += "-runbundles: \\\n\t"
+						def prefix = ""
+						resolve.keySet().toSorted().each {k ->
+							output += "${prefix}${toString(k)}"
+							prefix = ",\\\n\t"
+						}
+						println "${output}"
 					}
 				}
 			}
 		}
 	}
 
-    tasks.addRule('Pattern: <name>.run: Run the bnd(run) file <name>.bnd(run).') { taskName ->
-		if (taskName.endsWith('.run')) {
-			task(taskName) {
-				ext.exportTask = taskName - '.run'
-				description "Run the bnd(run) file <name>.bnd(run)."
-				dependsOn assemble
-				def runFile = getRunFile(projectDir, exportTask)
-				doFirst {
-					println "Running ${runFile}"
+    tasks.addRule('Pattern: run.<name>: Run the bnd(run) file <name>.bnd(run).') { taskName ->
+		if (taskName.startsWith('run.')) {
+			def bndrun = taskName - 'run.'
+			def runFile = getRunFile(projectDir, bndrun)
+			if (runFile.isFile()) {
+				task(taskName) {
+					description "Run the bnd(run) file <name>.bnd(run)."
+					dependsOn assemble
+					group 'export'
+					doLast {
+						Run run = new Run(bndWorkspace, buildDir, runFile)
+						println "Running ${bndrun} with\n  -runvm: ${run.getProperty('-runvm*')}"
+						ProjectLauncher l = run.getProjectLauncher();
+						l.setTrace(true);
+						l.launch();
+					}
 				}
-				doLast {
-					Run run = new Run(bndWorkspace, buildDir, runFile)
-					ProjectLauncher l = run.getProjectLauncher();
-					l.setTrace(true);
-					l.launch();
+			}
+		}
+	}
+
+    tasks.addRule('Pattern: debug.<name>: Run the bnd(run) file <name>.bnd(run) in DEBUG mode.') { taskName ->
+		if (taskName.startsWith('debug.')) {
+			def bndrun = taskName - 'debug.'
+			def runFile = getRunFile(projectDir, bndrun)
+			if (runFile.isFile()) {
+				task(taskName) {
+					description "Run the bnd(run) file <name>.bnd(run) in DEBUG mode.\nUse the system property 'bndrun.debug' to specify custom debug options."
+					dependsOn assemble
+					group 'export'
+					def debugOpts = System.getProperty('bndrun.debug')
+					if (debugOpts == null) {
+						debugOpts = "'-Xdebug','-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000'"
+					}
+					doLast {
+						Run run = new Run(bndWorkspace, buildDir, runFile)
+						run.setProperty("-runvm.${System.currentTimeMillis()}", debugOpts);
+						println "Debugging ${bndrun} with\n  -runvm: ${run.getProperty('-runvm*')}"
+						ProjectLauncher l = run.getProjectLauncher();
+						l.setTrace(true);
+						l.launch();
+					}
 				}
 			}
 		}
